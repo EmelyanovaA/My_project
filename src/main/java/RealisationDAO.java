@@ -1,24 +1,15 @@
-import java.sql.*;
-import java.text.DateFormat;
 
-import static javafx.scene.input.KeyCode.F;
+import java.sql.*;
 
 public class RealisationDAO implements ImageDAO {
 
-    public Image getImage(int id) {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
-        String user = "postgres";
-        String pass = "12345";
-        Connection conn = null;
+    Driver driver = new Driver();
+    Connection conn = driver.getConn();
+
+    public Image getImage(int id){
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(url, user, pass);
             Statement stat = conn.createStatement();
             ResultSet res = stat.executeQuery("select *from project where id = "+id);
-            int i = 1;
-            while(res.next()){
-                System.out.println("#"+i+"-"+res.getInt("id"));
-            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -34,25 +25,13 @@ public class RealisationDAO implements ImageDAO {
     }
 
     public boolean saveImage(Image image) {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
-        String user = "postgres";
-        String pass = "12345";
-        Connection conn = null;
-        Image im = new Image();
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(url, user, pass);
             String sql = "insert into project(id) values (?)";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setInt(1, 955555);
+            preparedStatement.setInt(1,12);
             preparedStatement.executeUpdate();
             Statement stat = conn.createStatement();
             ResultSet res = stat.executeQuery("select *from project");
-            int i = 1;
-            while(res.next()) {
-                System.out.println("#" + i + "-" + res.getInt("id"));
-                i++;
-            }
         }catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -68,33 +47,35 @@ public class RealisationDAO implements ImageDAO {
     }
 
     public boolean deleteImage(int id) {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
-        String user = "postgres";
-        String pass = "12345";
-        Connection conn = null;
-
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(url, user, pass);
             Statement stat = conn.createStatement();
             stat.executeUpdate("delete from project where id ="+id);
             ResultSet res = stat.executeQuery("select *from project");
-            int i = 1;
-            while(res.next()) {
-                System.out.println("#" + i + "-" + res.getInt("id"));
-                i++;
-            }
         }catch (Exception e) {
             e.printStackTrace();
         } finally {
-        if(conn!=null){
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if(conn!=null){
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
-    }
         return false;
+    }
+
+    public void print() {
+        try {
+            Statement stat = conn.createStatement();
+            ResultSet res = stat.executeQuery("select *from project");
+            int i = 1;
+            while(res.next()) {
+                System.out.println("#" + i + "-" + res.getInt("id") + " " + res.getString("link"));
+                i++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
